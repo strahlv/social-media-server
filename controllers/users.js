@@ -1,27 +1,34 @@
 const User = require("../models/user");
 const HttpError = require("../utils/HttpError");
+const bcrypt = require("bcrypt");
 
 module.exports.index = (req, res) => {};
 
 module.exports.login = async (req, res) => {
   const { username, password } = req.body;
 
-  // change password check
-  const existingUser = await User.findOne({ username, password });
+  const existingUser = await User.findOne({ username });
 
   if (!existingUser) {
     throw new HttpError(404, "User credentials don't match.");
   }
 
-  res.status(200).send("Logged in successfully.");
+  await existingUser.validatePassword(password);
+
+  res.status(200).json({ message: "Logged in successfully." });
 };
 
 module.exports.createUser = async (req, res) => {
-  const { username } = req.body;
+  const { username, email } = req.body;
 
-  const existingUser = await User.findOne({ username });
-  if (existingUser) {
-    throw new HttpError(409, "This user is already registered.");
+  const existingUsername = await User.findOne({ username });
+  if (existingUsername) {
+    throw new HttpError(409, "This username is already taken.");
+  }
+
+  const existingEmail = await User.findOne({ email });
+  if (existingEmail) {
+    throw new HttpError(409, "This email is already taken.");
   }
 
   const newUser = await User.create(req.body);
@@ -43,15 +50,27 @@ module.exports.showUser = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const modifiedUser = await User.findByIdAndUpdate(id, req.body, {
-    new: true,
-  });
 
-  if (!modifiedUser) {
+  // Utilizando o método find/save (em vez de findAndUpdate) pra poder utilizar o middleware de pre-save
+  let user = await User.findById(id);
+
+  if (!user) {
     throw new HttpError(404, "User not found.");
   }
 
-  res.status(200).json(modifiedUser);
+  // Comparar senhas para evitar hash desnecessário
+  const isMatchingPassword = await bcrypt.compare(
+    req.body.password,
+    user.password
+  );
+  if (isMatchingPassword) {
+    req.body.password = user.password;
+  }
+
+  user.set(req.body);
+  await user.save();
+
+  res.status(200).json(user);
 };
 
 module.exports.destroyUser = async (req, res) => {
