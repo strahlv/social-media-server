@@ -40,6 +40,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+require("./strategies/local")(passport);
 
 app.use("/", usersRouter);
 app.use("/", indexRouter);

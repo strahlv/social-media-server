@@ -5,17 +5,24 @@ const bcrypt = require("bcrypt");
 module.exports.index = (req, res) => {};
 
 module.exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  // const { username, password } = req.body;
 
-  const existingUser = await User.findOne({ username });
+  // const existingUser = await User.findOne({ username });
 
-  if (!existingUser) {
-    throw new HttpError(404, "User credentials don't match.");
-  }
+  // if (!existingUser) {
+  //   throw new HttpError(404, "User credentials don't match.");
+  // }
 
-  await existingUser.validatePassword(password);
+  // await existingUser.validatePassword(password);
 
+  console.log(req.user);
   res.status(200).json({ message: "Logged in successfully." });
+};
+
+module.exports.logout = (req, res) => {
+  req.logout();
+  console.log(req.user);
+  res.redirect("/");
 };
 
 module.exports.createUser = async (req, res) => {
