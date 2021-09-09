@@ -10,10 +10,6 @@ module.exports = (passport) => {
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
-      if (!user) {
-        throw new HttpError(404, "User not found.");
-      }
-
       done(null, user);
     } catch (error) {
       done(error);

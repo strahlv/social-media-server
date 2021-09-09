@@ -1,21 +1,31 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const HttpError = require("../utils/HttpError");
+const { DateTime, Interval } = require("luxon");
 
 const userSchema = new mongoose.Schema(
   {
-    username: String,
+    username: {
+      type: String,
+      unique: true,
+    },
     password: String,
-    email: String,
+    email: {
+      type: String,
+      unique: true,
+    },
     firstName: String,
     lastName: String,
     birthday: Date,
-    // friends: [mongoose.SchemaTypes.ObjectId],
-    // publicProfile: {
+    posts: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Post" }],
+    // friends: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
+    // friendRequests: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }]
+    // isPublic: {
     //   type: Boolean,
     //   default: true,
     // },
   },
+  // {timestamps: { currentTime: () => DateTime.now().toISO() }}
   { timestamps: true }
 );
 
@@ -33,12 +43,16 @@ userSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
-// userSchema.virtual("age").get(function () {
-//   return this.birthday;
-// });
+userSchema.virtual("age").get(function () {
+  const birthday = DateTime.fromJSDate(this.birthday);
+  const now = DateTime.now();
+  const age = Interval.fromDateTimes(birthday, now);
+  return Math.floor(age.length("years"));
+});
 
 userSchema.pre("save", async function (next) {
   if (this.isNew || this.isModified("password")) {
+    console.log(this);
     this.password = await bcrypt.hash(this.password, 12);
   } else {
     next();

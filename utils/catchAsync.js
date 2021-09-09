@@ -1,16 +1,13 @@
+const HttpError = require("./HttpError");
+
 module.exports = (func) => {
-  return async (req, res) => {
+  return async (req, res, next) => {
     try {
-      await func(req, res);
+      await func(req, res, next);
     } catch (error) {
-      const statusCode = error.status || 500;
-      res.status(statusCode).json({ message: error.message });
+      const code = error.status || 500;
+      console.log(error);
+      res.status(code).json({ message: error.message });
     }
   };
 };
-
-// module.exports = (func) => {
-//   return (req, res, next) => {
-//     func(req, res, next).catch(next);
-//   };
-// };

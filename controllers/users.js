@@ -5,16 +5,6 @@ const bcrypt = require("bcrypt");
 module.exports.index = (req, res) => {};
 
 module.exports.login = async (req, res) => {
-  // const { username, password } = req.body;
-
-  // const existingUser = await User.findOne({ username });
-
-  // if (!existingUser) {
-  //   throw new HttpError(404, "User credentials don't match.");
-  // }
-
-  // await existingUser.validatePassword(password);
-
   console.log(req.user);
   res.status(200).json({ message: "Logged in successfully." });
 };
@@ -65,13 +55,15 @@ module.exports.updateUser = async (req, res) => {
     throw new HttpError(404, "User not found.");
   }
 
-  // Comparar senhas para evitar hash desnecessário
-  const isMatchingPassword = await bcrypt.compare(
-    req.body.password,
-    user.password
-  );
-  if (isMatchingPassword) {
-    req.body.password = user.password;
+  if (req.body.password) {
+    // Comparar senhas para evitar hash desnecessário
+    const isMatchingPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
+    );
+    if (isMatchingPassword) {
+      req.body.password = user.password;
+    }
   }
 
   user.set(req.body);
@@ -88,5 +80,13 @@ module.exports.destroyUser = async (req, res) => {
     throw new HttpError(404, "User not found.");
   }
 
+  // Destruir todos os posts do usuario? Ou deixar como autor desconhecido?
+
   res.status(200).json(deletedUser);
+};
+
+module.exports.showUserPosts = async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findById(id).populate("posts");
+  res.status(200).json(user.posts);
 };

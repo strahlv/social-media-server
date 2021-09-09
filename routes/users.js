@@ -8,6 +8,7 @@ const {
   showUser,
   updateUser,
   destroyUser,
+  showUserPosts,
 } = require("../controllers/users");
 const { isAuthenticated } = require("../middleware");
 const catchAsync = require("../utils/catchAsync");
@@ -31,5 +32,7 @@ router
   .get(isAuthenticated, catchAsync(showUser))
   .put(isAuthenticated, catchAsync(updateUser))
   .delete(isAuthenticated, catchAsync(destroyUser));
+
+router.get("/users/:id/posts", isAuthenticated, catchAsync(showUserPosts));
 
 module.exports = router;

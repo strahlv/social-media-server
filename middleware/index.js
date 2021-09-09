@@ -1,13 +1,23 @@
+const Post = require("../models/post");
+
 module.exports.isAuthenticated = (req, res, next) => {
-  if (!req.user) {
-    res.status(401).json({ message: "Please login with your username." });
+  if (req.user) {
+    return next();
   }
-  next();
+
+  res.status(401).json({ message: "Please login with your username." });
 };
 
-module.exports.isAuthor = (req, res, next) => {
-  if (!req.user._id === req.author) {
-    res.status(403).json({ message: "You are not allowed to do this." });
+module.exports.isAuthor = async (req, res, next) => {
+  const { id } = req.params;
+  const { author } = await Post.findById(id);
+
+  console.log(req.user._id);
+  console.log(author);
+
+  if (req.user._id.equals(author)) {
+    return next();
   }
-  next();
+
+  res.status(403).json({ message: "You are not allowed to do this." });
 };

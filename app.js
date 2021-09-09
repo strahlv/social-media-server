@@ -45,7 +45,7 @@ require("./strategies/local")(passport);
 app.use("/", usersRouter);
 app.use("/", indexRouter);
 app.use("/posts", postsRouter);
-app.use("/posts/comments", commentsRouter);
+app.use("/posts/:postId/comments", commentsRouter);
 
 const port = process.env.PORT || "5000";
 app.listen(port, () => console.log(`Listening on port ${port}...`));
