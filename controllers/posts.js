@@ -21,18 +21,35 @@ module.exports.createPost = async (req, res) => {
 module.exports.showPost = async (req, res) => {
   const { id } = req.params;
   const post = await Post.findById(id);
+
+  if (!post) {
+    throw new HttpError(404, "Post not found.");
+  }
+
   res.status(200).json(post);
 };
 
 module.exports.updatePost = async (req, res) => {
   const { id } = req.params;
   const post = await Post.findByIdAndUpdate(id, req.body, { new: true });
+
+  if (!post) {
+    throw new HttpError(404, "Post not found.");
+  }
+
   res.status(200).json(post);
 };
 
 module.exports.destroyPost = async (req, res) => {
   const { id } = req.params;
   const post = await Post.findByIdAndDelete(id);
+
+  if (!post) {
+    throw new HttpError(404, "Post not found.");
+  }
+
+  await User.findByIdAndUpdate(req.user._id, { $pull: post });
+
   res.status(200).json(post);
 };
 
@@ -40,21 +57,11 @@ module.exports.likePost = async (req, res) => {
   const { id } = req.params;
   const post = await Post.findById(id);
 
-  const userId = req.user._id;
-  if (!post.likes.includes(userId)) {
-    post.likes.push(req.user);
-
-    if (post.dislikes.includes(userId)) {
-      const index = post.dislikes.indexOf(userId);
-      post.dislikes.splice(index, 1);
-    }
-  } else {
-    const index = post.likes.indexOf(userId);
-    post.likes.splice(index, 1);
+  if (!post) {
+    throw new HttpError(404, "Post not found.");
   }
 
-  post.save();
-
+  post.like(req.user);
   res.status(200).json(post);
 };
 
@@ -62,20 +69,10 @@ module.exports.dislikePost = async (req, res) => {
   const { id } = req.params;
   const post = await Post.findById(id);
 
-  const userId = req.user._id;
-  if (!post.dislikes.includes(userId)) {
-    post.dislikes.push(req.user);
-
-    if (post.likes.includes(userId)) {
-      const index = post.likes.indexOf(userId);
-      post.likes.splice(index, 1);
-    }
-  } else {
-    const index = post.dislikes.indexOf(userId);
-    post.dislikes.splice(index, 1);
+  if (!post) {
+    throw new HttpError(404, "Post not found.");
   }
 
-  post.save();
-
+  post.dislike(req.user);
   res.status(200).json(post);
 };

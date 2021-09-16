@@ -10,8 +10,8 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
+// const cors = require("cors");
 
-const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
 const commentsRouter = require("./routes/comments");
@@ -25,6 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+// app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 
 app.use(
   session({
@@ -42,8 +43,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 require("./strategies/local")(passport);
 
-app.use("/", usersRouter);
-app.use("/", indexRouter);
+app.use("/users", usersRouter);
 app.use("/posts", postsRouter);
 app.use("/posts/:postId/comments", commentsRouter);
 

@@ -8,7 +8,7 @@ const {
   likePost,
   dislikePost,
 } = require("../controllers/posts");
-const { isAuthenticated, isAuthor } = require("../middleware");
+const { isAuthenticated, isPostAuthor } = require("../middleware");
 const catchAsync = require("../utils/catchAsync");
 const router = express.Router();
 
@@ -20,8 +20,8 @@ router
 router
   .route("/:id")
   .get(isAuthenticated, catchAsync(showPost))
-  .put(isAuthenticated, catchAsync(isAuthor), catchAsync(updatePost))
-  .delete(isAuthenticated, catchAsync(isAuthor), catchAsync(destroyPost));
+  .put(isAuthenticated, catchAsync(isPostAuthor), catchAsync(updatePost))
+  .delete(isAuthenticated, catchAsync(isPostAuthor), catchAsync(destroyPost));
 
 router.patch("/:id/like", isAuthenticated, catchAsync(likePost));
 

@@ -2,9 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const {
   index,
+  createUser,
   login,
   logout,
-  createUser,
+  showCurrentUser,
   showUser,
   updateUser,
   destroyUser,
@@ -15,24 +16,24 @@ const catchAsync = require("../utils/catchAsync");
 
 const router = express.Router();
 
+router.route("/").get(catchAsync(index)).post(catchAsync(createUser));
+
+router.post(
+  "/login",
+  passport.authenticate("local", { failureMessage: true }),
+  catchAsync(login)
+);
+
+router.post("/logout", catchAsync(logout));
+
+router.get("/me", catchAsync(showCurrentUser));
+
 router
-  .route("/login")
-  .get(index)
-  .post(
-    passport.authenticate("local", { failureMessage: true }),
-    catchAsync(login)
-  );
-
-router.get("/logout", catchAsync(logout));
-
-router.post("/register", catchAsync(createUser));
-
-router
-  .route("/users/:id")
+  .route("/:id")
   .get(isAuthenticated, catchAsync(showUser))
   .put(isAuthenticated, catchAsync(updateUser))
   .delete(isAuthenticated, catchAsync(destroyUser));
 
-router.get("/users/:id/posts", isAuthenticated, catchAsync(showUserPosts));
+router.get("/:id/posts", isAuthenticated, catchAsync(showUserPosts));
 
 module.exports = router;

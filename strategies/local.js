@@ -1,6 +1,5 @@
 const LocalStrategy = require("passport-local");
 const User = require("../models/user");
-const HttpError = require("../utils/HttpError");
 
 module.exports = (passport) => {
   passport.serializeUser((user, done) => {

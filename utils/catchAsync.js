@@ -6,7 +6,7 @@ module.exports = (func) => {
       await func(req, res, next);
     } catch (error) {
       const code = error.status || 500;
-      console.log(error);
+      console.error(error);
       res.status(code).json({ message: error.message });
     }
   };

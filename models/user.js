@@ -30,13 +30,15 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.methods.validatePassword = async function (password) {
-  const isMatchingPassword = await bcrypt.compare(password, this.password);
-
-  if (!isMatchingPassword) {
-    throw new HttpError(404, "User credentials don't match.");
+  try {
+    const isMatchingPassword = await bcrypt.compare(password, this.password);
+    if (!isMatchingPassword) {
+      throw new HttpError(404, "User credentials doesn't match.");
+    }
+    return isMatchingPassword;
+  } catch (error) {
+    console.error(error);
   }
-
-  return isMatchingPassword;
 };
 
 userSchema.virtual("fullName").get(function () {

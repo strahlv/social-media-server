@@ -2,17 +2,26 @@ const User = require("../models/user");
 const HttpError = require("../utils/HttpError");
 const bcrypt = require("bcrypt");
 
-module.exports.index = (req, res) => {};
+module.exports.index = async (req, res) => {
+  const users = await User.find({});
+  res.status(200).json(users);
+};
 
-module.exports.login = async (req, res) => {
-  console.log(req.user);
-  res.status(200).json({ message: "Logged in successfully." });
+module.exports.login = (req, res) => {
+  res.status(200).json(req.user);
 };
 
 module.exports.logout = (req, res) => {
   req.logout();
-  console.log(req.user);
-  res.redirect("/");
+  res.status(200).json({ message: "Successfully logged out." });
+};
+
+module.exports.showCurrentUser = (req, res) => {
+  if (!req.user) {
+    throw new HttpError(401, "User not logged in.");
+  }
+
+  res.status(200).json(req.user);
 };
 
 module.exports.createUser = async (req, res) => {
@@ -29,6 +38,12 @@ module.exports.createUser = async (req, res) => {
   }
 
   const newUser = await User.create(req.body);
+
+  await req.login(newUser, function (err) {
+    if (err) {
+      return next(err);
+    }
+  });
 
   res.status(201).json(newUser);
 };

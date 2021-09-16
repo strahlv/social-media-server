@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const reactions = require("./plugins/reactions");
 
 const postSchema = new mongoose.Schema(
   {
@@ -20,5 +21,7 @@ postSchema.virtual("likeCount").get(function () {
 postSchema.virtual("dislikeCount").get(function () {
   return dislikes.length;
 });
+
+postSchema.plugin(reactions);
 
 module.exports = mongoose.model("Post", postSchema);
