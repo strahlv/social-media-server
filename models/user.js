@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
     // },
   },
   // {timestamps: { currentTime: () => DateTime.now().toISO() }}
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true } }
 );
 
 userSchema.methods.validatePassword = async function (password) {

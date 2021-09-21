@@ -2,7 +2,10 @@ const Post = require("../models/post");
 const User = require("../models/user");
 
 module.exports.index = async (req, res) => {
-  const posts = await Post.find({ author: req.user._id });
+  const posts = await Post.find({ author: req.user._id }).populate(
+    "author",
+    "firstName lastName fullName birthday"
+  );
   res.status(200).json(posts);
 };
 

@@ -102,6 +102,6 @@ module.exports.destroyUser = async (req, res) => {
 
 module.exports.showUserPosts = async (req, res) => {
   const { id } = req.params;
-  const user = await User.findById(id).populate("posts");
+  const user = await User.findById(id).populate("posts").populate("author");
   res.status(200).json(user.posts);
 };
