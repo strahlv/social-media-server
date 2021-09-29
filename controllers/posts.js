@@ -2,10 +2,13 @@ const Post = require("../models/post");
 const User = require("../models/user");
 
 module.exports.index = async (req, res) => {
-  const posts = await Post.find({ author: req.user._id }).populate(
-    "author",
-    "firstName lastName fullName birthday"
-  );
+  const posts = await Post.find({ author: req.user._id })
+    .populate("author", "firstName lastName fullName birthday")
+    .populate("comments")
+    .populate({
+      path: "comments",
+      populate: { path: "author", select: "firstName lastName fullName" },
+    });
   res.status(200).json(posts);
 };
 
@@ -45,13 +48,14 @@ module.exports.updatePost = async (req, res) => {
 
 module.exports.destroyPost = async (req, res) => {
   const { id } = req.params;
+
+  await User.findByIdAndUpdate(req.user._id, { $pull: { posts: id } });
+
   const post = await Post.findByIdAndDelete(id);
 
   if (!post) {
     throw new HttpError(404, "Post not found.");
   }
-
-  await User.findByIdAndUpdate(req.user._id, { $pull: post });
 
   res.status(200).json(post);
 };

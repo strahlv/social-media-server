@@ -34,4 +34,12 @@ module.exports = (schema) => {
 
     await this.save();
   };
+
+  schema.virtual("likeCount").get(function () {
+    return this.likes.length;
+  });
+
+  schema.virtual("dislikeCount").get(function () {
+    return this.dislikes.length;
+  });
 };
