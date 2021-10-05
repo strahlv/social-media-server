@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     },
     firstName: String,
     lastName: String,
+    location: String,
     birthday: Date,
     posts: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Post" }],
     // friends: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],

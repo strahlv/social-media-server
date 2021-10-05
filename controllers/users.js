@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const HttpError = require("../utils/HttpError");
 const bcrypt = require("bcrypt");
+const Post = require("../models/post");
 
 module.exports.index = async (req, res) => {
   const users = await User.find({});
@@ -102,6 +103,18 @@ module.exports.destroyUser = async (req, res) => {
 
 module.exports.showUserPosts = async (req, res) => {
   const { id } = req.params;
-  const user = await User.findById(id).populate("posts").populate("author");
-  res.status(200).json(user.posts);
+
+  // const user = await User.findById(id)
+  //   .populate("posts")
+  //   .populate({ path: "posts", populate: { path: "author" } });
+
+  const posts = await Post.find({ author: id })
+    .populate("author", "firstName lastName fullName birthday")
+    .populate("comments")
+    .populate({
+      path: "comments",
+      populate: { path: "author", select: "firstName lastName fullName" },
+    });
+
+  res.status(200).json(posts);
 };
