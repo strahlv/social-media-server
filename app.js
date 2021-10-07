@@ -10,7 +10,7 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
-// const cors = require("cors");
+const helmet = require("helmet");
 
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
@@ -25,12 +25,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+
+app.use(helmet());
 
 app.use(
   session({
     store: MongoStore.create({ mongoUrl: process.env.DB_URI }),
-    secret: "oxechillout",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
