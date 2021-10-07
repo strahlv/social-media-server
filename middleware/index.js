@@ -2,7 +2,7 @@ const Comment = require("../models/comment");
 const Post = require("../models/post");
 
 module.exports.isAuthenticated = (req, res, next) => {
-  if (!req.isAuthenticated()) {
+  if (!req.user) {
     console.log("User not authenticated.");
     return;
   }
