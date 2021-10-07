@@ -8,31 +8,37 @@ module.exports = (schema) => {
 
     let age = interval.length("minutes");
     if (age < 60) {
-      return `${Math.floor(age)} minute(s) ago`;
+      const timeUnit = age < 2 ? "minuto" : "minutos";
+      return `${Math.floor(age)} ${timeUnit} atrás`;
     }
 
     age = interval.length("hours");
     if (age < 24) {
-      return `${Math.floor(age)} hour(s) ago`;
+      const timeUnit = age < 2 ? "hora" : "horas";
+      return `${Math.floor(age)} ${timeUnit} atrás`;
     }
 
     age = interval.length("days");
     if (age < 7) {
-      return `${Math.floor(age)} day(s) ago`;
+      const timeUnit = age < 2 ? "dia" : "dias";
+      return `${Math.floor(age)} ${timeUnit} atrás`;
     }
 
     age = interval.length("weeks");
     if (age < 4) {
-      return `${Math.floor(age)} week(s) ago`;
+      const timeUnit = age < 2 ? "semana" : "semanas";
+      return `${Math.floor(age)} ${timeUnit} atrás`;
     }
 
     age = interval.length("months");
     if (age < 12) {
-      return `${Math.floor(age)} month(s) ago`;
+      const timeUnit = age < 2 ? "mês" : "meses";
+      return `${Math.floor(age)} ${timeUnit} atrás`;
     }
 
     age = interval.length("years");
-    return `${Math.floor(age)} year(s) ago`;
+    const timeUnit = age < 2 ? "ano" : "anos";
+    return `${Math.floor(age)} ${timeUnit} atrás`;
   };
 
   schema.virtual("createdAge").get(function () {

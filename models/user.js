@@ -16,17 +16,11 @@ const userSchema = new mongoose.Schema(
     },
     firstName: String,
     lastName: String,
+    bio: String,
     location: String,
     birthday: Date,
     posts: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Post" }],
-    // friends: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }],
-    // friendRequests: [{ type: mongoose.SchemaTypes.ObjectId, ref: "User" }]
-    // isPublic: {
-    //   type: Boolean,
-    //   default: true,
-    // },
   },
-  // {timestamps: { currentTime: () => DateTime.now().toISO() }}
   { timestamps: true, toJSON: { virtuals: true } }
 );
 
