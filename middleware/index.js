@@ -3,7 +3,8 @@ const Post = require("../models/post");
 
 module.exports.isAuthenticated = (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.redirect("/login");
+    console.log("User not authenticated.");
+    return;
   }
 
   next();
