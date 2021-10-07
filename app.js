@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
 const helmet = require("helmet");
+const cors = require("cors");
 
 const usersRouter = require("./routes/users");
 const postsRouter = require("./routes/posts");
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(cors());
 app.use(helmet());
 
 app.use(
