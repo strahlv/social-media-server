@@ -21,23 +21,30 @@ const app = express();
 
 mongoose.connect(process.env.DB_URI);
 
+app.set("trust proxy", 1);
+
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use(helmet());
 
 app.use(
   session({
-    store: MongoStore.create({ mongoUrl: process.env.DB_URI }),
+    store: MongoStore.create({
+      mongoUrl: process.env.DB_URI,
+      touchAfter: 1000 * 60 * 60,
+    }),
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
     },
   })
 );

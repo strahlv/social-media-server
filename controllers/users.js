@@ -9,7 +9,6 @@ module.exports.index = async (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  console.log("User:", req.user);
   res.status(200).json(req.user);
 };
 
