@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const Post = require("../models/post");
 
 module.exports.index = async (req, res) => {
-  const users = await User.find({});
+  const users = await User.find({}).select("-password");
   res.status(200).json(users);
 };
 
@@ -45,6 +45,8 @@ module.exports.createUser = async (req, res) => {
       return next(err);
     }
   });
+
+  delete newUser.password;
 
   res.status(201).json(newUser);
 };
