@@ -4,14 +4,12 @@ const bcrypt = require("bcrypt");
 const Post = require("../models/post");
 
 module.exports.index = async (req, res) => {
-  const users = await User.find({}).select("-password");
+  const users = await User.find({});
   res.status(200).json(users);
 };
 
 module.exports.login = (req, res) => {
-  const user = { ...req.user };
-  delete user.password;
-  res.status(200).json(user);
+  res.status(200).json(req.user);
 };
 
 module.exports.logout = (req, res) => {
@@ -20,9 +18,7 @@ module.exports.logout = (req, res) => {
 };
 
 module.exports.showCurrentUser = (req, res) => {
-  const user = { ...req.user };
-  delete user.password;
-  res.status(200).json(user);
+  res.status(200).json(req.user);
 };
 
 module.exports.createUser = async (req, res) => {
@@ -46,15 +42,13 @@ module.exports.createUser = async (req, res) => {
     }
   });
 
-  delete newUser.password;
-
   res.status(201).json(newUser);
 };
 
 module.exports.showUser = async (req, res) => {
   const { id } = req.params;
 
-  const existingUser = await User.findById(id).select("-password");
+  const existingUser = await User.findById(id);
 
   if (!existingUser) {
     throw new HttpError(404, "User not found.");
@@ -105,10 +99,6 @@ module.exports.destroyUser = async (req, res) => {
 
 module.exports.showUserPosts = async (req, res) => {
   const { id } = req.params;
-
-  // const user = await User.findById(id)
-  //   .populate("posts")
-  //   .populate({ path: "posts", populate: { path: "author" } });
 
   const posts = await Post.find({ author: id })
     .populate("author", "firstName lastName fullName birthday")
