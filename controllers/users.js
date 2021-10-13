@@ -9,7 +9,9 @@ module.exports.index = async (req, res) => {
 };
 
 module.exports.login = (req, res) => {
-  res.status(200).json(req.user);
+  const user = { ...req.user };
+  delete user.password;
+  res.status(200).json(user);
 };
 
 module.exports.logout = (req, res) => {
@@ -18,11 +20,9 @@ module.exports.logout = (req, res) => {
 };
 
 module.exports.showCurrentUser = (req, res) => {
-  if (!req.user) {
-    throw new HttpError(401, "User not logged in.");
-  }
-
-  res.status(200).json(req.user);
+  const user = { ...req.user };
+  delete user.password;
+  res.status(200).json(user);
 };
 
 module.exports.createUser = async (req, res) => {
@@ -54,7 +54,7 @@ module.exports.createUser = async (req, res) => {
 module.exports.showUser = async (req, res) => {
   const { id } = req.params;
 
-  const existingUser = await User.findById(id);
+  const existingUser = await User.findById(id).select("-password");
 
   if (!existingUser) {
     throw new HttpError(404, "User not found.");
